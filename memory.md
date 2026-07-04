@@ -1,41 +1,34 @@
-# 🧠 Memory & Context
+# 🧠 memory.md — Diario de decisiones y bloqueos · EcoWeather Málaga
 
-> **Frontera de uso (Memory vs. Tasks):**
-> - `task.md` → progreso **operativo**: checklist de tareas, Snapshot de Contexto (el paso exacto siguiente), y estado de la sesión.
-> - `memory.md` → contexto **cualitativo y temático**: conocimiento persistente, decisiones técnicas profundas, lecciones, y el área del producto en foco (no el paso específico).
-> Si hay info que sirva para los dos, prioriza: datos con fecha/paso exacto → `task.md`; razonamiento/por-qué/lecciones → `memory.md`.
->
-> *Instrucción para la IA: Consulta este archivo al inicio de cada sesión para recuperar el hilo técnico. Actualiza las secciones correspondientes cuando el workflow lo indique (triggers en `/plan`, `/build`, `/test` y gate en `/ship`).*
+> Registro de decisiones de arquitectura (ADRs) e historial de problemas y soluciones.
 
-## 🎯 Contexto Activo
-- **Estado actual del desarrollo:** Release de la versión v2.0.0 finalizada con éxito. El framework ha sido actualizado por completo para soportar la metodología de ingeniería agéntica y optimización del arnés.
-- **Foco inmediato:** Distribución y documentación de la v2.0.0 para desarrolladores de equipo.
+## Decisiones de arquitectura
 
-## 🏗️ Log de Decisiones Técnicas (ADR Ligero)
-*Registro de por qué se tomaron ciertas rutas (ej. cambios en librerías, arquitectura o patrones).*
+**ADR-001 · Opción del caso práctico: EcoWeather (Opción A)**
+Elegida por usar Open-Meteo, una API gratuita sin registro ni API Key, lo que elimina riesgos de gestión de claves en la fuente de datos y simplifica el arranque del proyecto. Ciudad fijada: Málaga (relevancia local del autor).
 
-- **2026-06-15 - Transición a dbv-specs-ops v2.0.0 (Agentic Engineering):** Implementación de los principios del libro blanco de Google. Se unificaron los Evals no deterministas de IA en la fase `/test` para simplificar el flujo, y se añadió la auditoría de seguridad en `/code-simplify` para evitar la fuga de credenciales o de paquetes alucinados (*slopsquatting*). Se transicionó la sección MCP en la arquitectura a una definición explícita de Arnés (Harness) del Agente.
+**ADR-002 · Stack: Streamlit + Python (perfil de negocio)**
+Siguiendo la recomendación del enunciado para perfiles de negocio: Streamlit permite construir interfaz, gráficos interactivos (Plotly) y chat en pocas líneas, centrando el esfuerzo en la especificación y el prompt engineering.
 
-## ⚠️ Lecciones Aprendidas / Errores Evitados
-*Notas sobre bugs específicos, configuraciones que fallaron o refactors intentados para no repetirlos.*
+**ADR-003 · LLM: Google Gemini 2.5 Flash con SDK `google-genai`**
+Elegido por su tier gratuito, baja latencia y ventana de contexto amplia (necesaria para inyectar el JSON completo de dos endpoints de Open-Meteo en cada consulta). Se usa el SDK moderno `google-genai` en lugar del antiguo `google-generativeai`, ya deprecado.
 
-- **[Feedback de Usabilidad]**: Es mejor integrar los conceptos nuevos (como Evals) en las fases existentes (`/test`) y delegar los modos de ejecución (Conductor/Orquestador) de forma implícita, en lugar de sobrecargar al desarrollador final con configuraciones complejas o preguntas confusas.
-- **[Estructura de Onboarding]**: En proyectos existentes con archivos raíz consolidados (como `README.md` y `CHANGELOG.md`), es preferible descargar el framework completo en una subcarpeta dedicada (`dbv-specs-ops/`) e indicar al agente su ubicación a través de un archivo de activación ligero (`CLAUDE.md`, `GEMINI.md`). Esto evita colisiones de archivos y mantiene limpio el código de producción.
+**ADR-004 · Inyección de contexto en el prompt de sistema**
+El JSON de ambos endpoints se inserta en el prompt de sistema en cada pregunta, con reglas explícitas: responder solo con los datos proporcionados, citar valores concretos y no inventar información. Objetivo: evitar alucinaciones (requisito de la rúbrica).
 
+**ADR-005 · Arquitectura modular en 3 archivos**
+`api_client.py` (datos), `llm_advisor.py` (IA) y `app.py` (interfaz) separados para facilitar mantenimiento y pruebas, en lugar de un único script monolítico.
 
-## 🗺️ Mapa de Relaciones
-*Breve descripción de cómo interactúan los módulos actuales para ayudar a la IA a navegar el código.*
+**ADR-006 · Caché de datos de 15 minutos**
+`st.cache_data(ttl=900)` para no saturar la API de Open-Meteo en cada recarga de la página y acelerar la app.
 
-- **[Módulo/Componente]:** [Responsabilidad y Dependencias]
-- *Ejemplo: `auth_service.js` gestiona el JWT y depende de `api_client.js`. (Borra esta línea de ejemplo al crear la primera entrada real).*
+## Bloqueos encontrados y soluciones
 
----
+**BLQ-001 · Comando `pip` no reconocido en Windows**
+La instalación de Python 3.14 no añadió `pip` al PATH. Solución: usar el lanzador de Windows con `py -m pip install -r requirements.txt` y `py -m streamlit run app.py`.
 
-## 🧹 Política de Mantenimiento
+**BLQ-002 · Aviso de deprecación `use_container_width` en Streamlit 1.58**
+Los gráficos generaban warnings porque el parámetro `use_container_width=True` está obsoleto. Solución: sustituirlo por `width="stretch"` en las tres llamadas a `st.plotly_chart`. Durante el reemplazo se introdujo por error una comilla sin cerrar que rompía la sintaxis; se corrigió revisando las líneas afectadas una a una.
 
-*Aplicar en cada `/ship` de tipo Major, o cuando este fichero supere las 200 líneas activas:*
-
-- **Consolida** decisiones relacionadas en una sola entrada.
-- **Archiva** lecciones ya internalizadas en el código: muévelas a `memory.archive.md` (créalo si no existe).
-- **Elimina** entradas que describan decisiones revertidas o ya obsoletas.
-- **Objetivo:** mantener `memory.md` por debajo de ~200 líneas activas para que la IA pueda leerlo íntegramente en cada sesión sin pérdida de atención.
+**BLQ-003 · Seguridad: API Key expuesta accidentalmente**
+La primera clave de Gemini quedó expuesta en una captura de pantalla durante la configuración. Solución: se revocó (borró) la clave comprometida en Google AI Studio y se generó una nueva, almacenada únicamente en el fichero `.env` local (incluido en `.gitignore`). Lección aprendida: las claves nunca se muestran en capturas ni se pegan en chats o repositorios.
