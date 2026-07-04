@@ -37,7 +37,6 @@ logs/
 *.tmp
 *.bak
 implementation_plan.md
-walkthrough.md
 
 # Ficheros de evaluación interna (no versionar)
 docs/EvaluacionChatGPT.md
