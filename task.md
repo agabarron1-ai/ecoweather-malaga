@@ -1,38 +1,53 @@
-# 📝 Registro de Tareas: dbv-specs-ops v2.1.0 (Agent Readiness Integration)
+✅ task.md — Checklist de tareas · EcoWeather Málaga
 
-## 🏗 In Progress / En Curso
 
-*(No active tasks)*
+Estados: [ ] pendiente · [/] en progreso · [x] completado
 
-## ⏳ Pending / Pendientes (Backlog)
 
-*(No tasks pending)*
 
-## ✅ Completed / Completadas
+Fase 1: Spec (Especificación)
 
-- [x] **Fase 2: Planificación y Preparación**
-  - [x] Crear `implementation_plan.md` y actualizar `task.md` con las tareas activas.
-  - [x] Obtener aprobación final del usuario sobre los cambios propuestos.
-- [x] **Fase 3: Construcción (`/build`)**
-  - [x] Modificar `project.config.md` para añadir la propiedad de `Agent Readiness` y subir la versión a `2.1.0`.
-  - [x] Actualizar `docs/MASTER_PROMPT.md` con las directivas de Agent Readiness en bootstrap, `/spec`, `/build` y `/ship`.
-  - [x] Actualizar `docs/SPECIFICATIONS.md` con el checklist y el riesgo asociado.
-  - [x] Actualizar `docs/ARCHITECTURE.md` con la sección de interfaz externa bajo el arnés.
-  - [x] Corregir la contradicción en `README.md` (reemplazando `/plan` por `/spec` como comando inicial).
-  - [x] Registrar los cambios en `CHANGELOG.md` y `docs/UPGRADE_PROMPT.md`.
-- [x] **Fase 4: Pruebas y Verificación (`/test`)**
-  - [x] Validar la sintaxis de todos los archivos y plantillas modificados.
-- [x] **Fase 5: Simplificar (`/code-simplify`)**
-  - [x] Auditar coherencia y lenguaje del prompt.
-- [x] **Fase 6: Entrega (`/ship`)**
-  - [x] Completar `walkthrough.md` detallando las novedades de la v2.1.0.
-  - [x] Publicar la versión en `CHANGELOG.md` con fecha de hoy y corregir los links de comparación.
 
----
+ Elegir opción del caso práctico (Opción A: EcoWeather & Air Quality Advisor)
+ Definir ciudad objetivo (Málaga) y endpoints de Open-Meteo
+ Elegir proveedor de LLM (Google Gemini 2.5 Flash) y justificarlo
+ Redactar docs/SPECIFICATIONS.md completo (requisitos, flujo de usuario, prompt, arquitectura)
 
-## 🔄 Context Snapshot / Snapshot de Contexto
 
-> **Last update / Última actualización:** 2026-06-17
-> **Exact point / Punto exacto:** Versión 2.1.0 (Agent Readiness Integration) finalizada y documentada en walkthrough y changelog.
-> **Pending / Pendiente:** Ejecutar commit y tag en el repositorio local.
-> **Next step / Próximo paso:** Informar al usuario humano del éxito de la release y ofrecer los comandos Git.
+Fase 2: Plan (Planificación)
+
+
+ Definir arquitectura modular en 3 archivos: api_client.py, llm_advisor.py, app.py
+ Elegir metodología de gestión: Opción 1 (dbv-specs-ops, plantilla del profesor)
+ Crear repositorio desde la plantilla dbv-specs-ops
+
+
+Fase 3: Build (Construcción)
+
+
+ Módulo de conexión a Open-Meteo con manejo de errores (api_client.py)
+ Módulo de integración con Gemini e inyección de contexto (llm_advisor.py)
+ Interfaz Streamlit: 3 gráficos (temperatura, radiación solar, calidad del aire) + chat (app.py)
+ Gestión segura de la API Key con .env + .gitignore
+ Corregir parámetro obsoleto use_container_width → width="stretch" (Streamlit 1.58)
+
+
+Fase 4: Test (Validación)
+
+
+ Verificar carga de datos reales de Málaga en los 3 gráficos
+ Caso de uso 1: precauciones para asmáticos según PM2.5/NO2 → el asistente cita valores reales ✔
+ Caso de uso 2: mejor momento para carga de vehículo eléctrico según radiación solar
+ Caso de uso 3: resumen ejecutivo semanal de sostenibilidad
+ Probar el manejo de errores (desconectar internet y verificar mensaje amigable)
+ Verificar arranque limpio siguiendo solo el README en una carpeta nueva
+
+
+Fase 5: Ship (Entrega)
+
+
+ Actualizar README.md con instrucciones de instalación (.env, dependencias, arranque)
+ Completar walkthrough.md con resumen de cambios y capturas
+ Grabar vídeo demostrativo (máximo 3 minutos)
+ Revisión final: ninguna API Key en el código ni en el historial de Git
+ Entregar enlace al repositorio + vídeo
