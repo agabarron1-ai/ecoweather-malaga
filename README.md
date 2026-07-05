@@ -4,7 +4,7 @@ Trabajo Fin de Módulo · **Fundamentos de Inteligencia Artificial** · Máster 
 
 Aplicación web que muestra la previsión de **temperatura, radiación solar y calidad del aire (PM2.5 y NO2)** de Málaga con datos en tiempo real de la API pública [Open-Meteo](https://open-meteo.com/), e integra un **asistente conversacional (Google Gemini)** que responde preguntas de salud, energía y sostenibilidad basándose estrictamente en esos datos.
 
-**📹 Vídeo demostrativo:** [ENLACE AL VÍDEO — pendiente]
+**📹 Vídeo demostrativo:** https://youtu.be/Uo5zNOWhaks 
 
 ---
 

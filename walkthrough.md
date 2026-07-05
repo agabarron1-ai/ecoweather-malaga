@@ -25,6 +25,6 @@
 
 ## Demostración
 
-**📹 Vídeo demostrativo (máx. 3 minutos):** [ENLACE AL VÍDEO — pendiente]
+**📹 Vídeo demostrativo (máx. 3 minutos):** https://youtu.be/Uo5zNOWhaks 
 
 El vídeo muestra: la interfaz cargando datos en tiempo real de Open-Meteo, los tres gráficos interactivos, y la interacción conversacional con el chatbot respondiendo a los casos de uso con valores reales de los datos.
